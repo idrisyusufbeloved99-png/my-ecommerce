@@ -4,7 +4,7 @@ import MainLayout from "./shared/MainLayout";
 import AdminLayout from "./shared/AdminLayout";
 // Pages
 import HomePage from "./pages/HomePage";
-import ShopPage from "./pages/shopPage";
+import ShopPage from "./pages/ShopPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -12,7 +12,7 @@ import OrderPage from "./pages/OrderPage";
 import ProfilePage from "./pages/ProfilePage";
 // Auth
 import LoginPage from "./auth/LoginPage";
-import RegisterPage from "./auth/RegisterPage"
+import RegisterPage from "./auth/RegisterPage";
 // Admin
 import DashboardPage from "./admin/DashboardPage";
 import AdminProductPage from "./admin/AdminProductPage";
@@ -20,13 +20,12 @@ import AdminOrderPage from "./admin/AdminOrderPage";
 import AdminUsersPage from "./admin/AdminUsersPage";
 import { use } from "react";
 
-
 const useAuth = () => {
   return {
     isAuthenticated: true,
-    role: "admin", 
+    role: "admin",
   };
-}
+};
 // ─────────────────────────────────────────────
 // PROTECTED ROUTE — must be logged in
 // ─────────────────────────────────────────────
@@ -42,14 +41,14 @@ const ProtectedRoute = () => {
 // ADMIN ROUTE — must be logged in AND be admin
 // ─────────────────────────────────────────────
 const AdminRoute = () => {
-    const { isAuthenticated, role } = useAuth();
-    if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
-    }   
-    if (role !== "admin") {
-      return <Navigate to="/" replace />;
-    }
-    return <Outlet />;
+  const { isAuthenticated, role } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  if (role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
 };
 // ─────────────────────────────────────────────
 // ROUTER
