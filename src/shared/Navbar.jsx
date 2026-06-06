@@ -128,7 +128,7 @@ export default function Navbar() {
   const location = useLocation();
 
   // TODO: replace with real auth
-  const isAuthenticated = false;
+  const isAuthenticated = true;
 
   return (
     <>
