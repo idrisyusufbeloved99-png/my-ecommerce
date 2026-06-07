@@ -1,139 +1,90 @@
-import { createBrowserRouter, Outlet, Navigate } from "react-router-dom";
-// Layouts
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+
 import MainLayout from "./shared/MainLayout";
 import AdminLayout from "./shared/AdminLayout";
-// Pages
+
 import HomePage from "./pages/HomePage";
 import ShopPage from "./pages/ShopPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderPage from "./pages/OrderPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 import ProfilePage from "./pages/ProfilePage";
-// Auth
+import NotFoundPage from "./pages/NotFoundPage";
+
 import LoginPage from "./auth/LoginPage";
 import RegisterPage from "./auth/RegisterPage";
-// Admin
+
 import DashboardPage from "./admin/DashboardPage";
 import AdminProductPage from "./admin/AdminProductPage";
 import AdminOrderPage from "./admin/AdminOrderPage";
 import AdminUsersPage from "./admin/AdminUsersPage";
-import { use } from "react";
 
-const useAuth = () => {
-  return {
-    isAuthenticated: true,
-    role: "admin",
-  };
-};
-// ─────────────────────────────────────────────
-// PROTECTED ROUTE — must be logged in
-// ─────────────────────────────────────────────
-const ProtectedRoute = () => {
+// ── MOCK AUTH — swap for real context when backend is ready ──
+function useAuth() {
+  return { isAuthenticated: true, role: "admin" };
+}
+
+function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  return <Outlet />;
-};
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+}
 
-// ─────────────────────────────────────────────
-// ADMIN ROUTE — must be logged in AND be admin
-// ─────────────────────────────────────────────
-const AdminRoute = () => {
+function AdminRoute() {
   const { isAuthenticated, role } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  if (role !== "admin") {
-    return <Navigate to="/" replace />;
-  }
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role !== "admin") return <Navigate to="/" replace />;
   return <Outlet />;
-};
-// ─────────────────────────────────────────────
-// ROUTER
-// ─────────────────────────────────────────────
+}
+
 const router = createBrowserRouter([
+  // ── PUBLIC + CUSTOMER — inside MainLayout (Navbar + Footer) ──
   {
     element: <MainLayout />,
     children: [
-      {
-        path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/shop",
-        element: <ShopPage />,
-      },
-      {
-        path: "/product/:id",
-        element: <ProductDetailsPage />,
-      },
-      {
-        path: "/cart",
-        element: <CartPage />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/register",
-        element: <RegisterPage />,
-      },
+      { path: "/", element: <HomePage /> },
+      { path: "/shop", element: <ShopPage /> },
+      { path: "/product/:id", element: <ProductDetailsPage /> },
+      { path: "/cart", element: <CartPage /> },
 
-      // ── PROTECTED (customer) ROUTES ──
+      // Protected — must be logged in
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: "/checkout",
-            element: <CheckoutPage />,
-          },
-          {
-            path: "/orders",
-            element: <OrderPage />,
-          },
-          {
-            path: "/profile",
-            element: <ProfilePage />,
-          },
+          { path: "/checkout", element: <CheckoutPage /> },
+          { path: "/order-success", element: <OrderSuccessPage /> },
+          { path: "/orders", element: <OrderPage /> },
+          { path: "/profile", element: <ProfilePage /> },
         ],
       },
     ],
   },
 
-  // ── ADMIN ROUTES ──
+  // ── AUTH — standalone pages (no Navbar/Footer) ──
+  { path: "/login", element: <LoginPage /> },
+  { path: "/register", element: <RegisterPage /> },
+
+  // ── ADMIN — AdminLayout (sidebar only) ──
   {
     element: <AdminRoute />,
     children: [
       {
         element: <AdminLayout />,
         children: [
-          {
-            path: "/admin",
-            element: <DashboardPage />,
-          },
-          {
-            path: "/admin/products",
-            element: <AdminProductPage />,
-          },
-          {
-            path: "/admin/orders",
-            element: <AdminOrderPage />,
-          },
-          {
-            path: "/admin/users",
-            element: <AdminUsersPage />,
-          },
+          { path: "/admin", element: <DashboardPage /> },
+          { path: "/admin/products", element: <AdminProductPage /> },
+          { path: "/admin/orders", element: <AdminOrderPage /> },
+          { path: "/admin/users", element: <AdminUsersPage /> },
         ],
       },
     ],
   },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
+
+  // ── 404 ──
+  // ✅ CORRECT
+  { path: "*", element: <NotFoundPage /> },
+  
 ]);
 
 export default router;
